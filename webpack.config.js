@@ -4,11 +4,12 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const glob = require('glob');
 
+const webpack = require('webpack');
 module.exports = {
-    mode: "production",
+    mode: "development",
     entry: {
-        app: 'src/index.tsx',
-        components: 'src/components/Hello.tsx',
+        app: path.resolve(__dirname, 'src/index.tsx'),
+        components: path.resolve(__dirname, 'src/components/Hello.tsx'),
     },
     output: {
         filename: '[name].js',
@@ -18,12 +19,16 @@ module.exports = {
     devtool: "source-map",
 
     devServer: {
+        port: 3030,
+        historyApiFallback: true,
+        inline: true,
         contentBase: './dist'
     },
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx"]
+        extensions: [".ts", ".tsx", ".js"],
+        modules: [path.resolve(__dirname, "src"), "node_modules"]
     },
 
     plugins: [
@@ -41,7 +46,8 @@ module.exports = {
                 useShortDoctype: true
             },
         }),
-        new HtmlWebpackInlineSourcePlugin()
+        new HtmlWebpackInlineSourcePlugin(),
+        new webpack.HotModuleReplacementPlugin()
     ],
 
     module: {
