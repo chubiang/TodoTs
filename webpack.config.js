@@ -37,6 +37,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             title: 'Hello React!',
+            template: 'index.html',
             minify: {
                 collapseWhitespace: true,
                 removeComments: true,
@@ -54,7 +55,7 @@ module.exports = {
         rules: [
             {
                 test: /\.ts(x?)$/,
-                exclude: /node_modules/,
+                exclude: /(node_modules|dist)/,
                 use: [
                     {
                         loader: "ts-loader"
@@ -65,6 +66,7 @@ module.exports = {
             {
                 enforce: "pre",
                 test: /\.js$/,
+                exclude: /(node_modules)/,
                 loader: "source-map-loader"
             }
         ]
@@ -74,8 +76,8 @@ module.exports = {
     // assume a corresponding global variable exists and use that instead.
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
-    externals: {
-        "react": "React",
-        "react-dom": "ReactDOM"
-    }
+    // externals: {
+    //     "react": "React",
+    //     "react-dom": "ReactDOM"
+    // }
 };
