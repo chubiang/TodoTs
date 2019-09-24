@@ -1,54 +1,67 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { Hello } from "./Hello";
 
-export interface TodoType { memo?: string; time?: Date; }
-type Action = | { type: 'add' } | { type: 'remove' };
+export interface TodoType { todo: {memo?: string; time?: Date;}[] };
 
-function reducer(state: TodoType, action: Action): TodoType[] {
+const TodoList:React.FC = (props) => {
+    const todo = React.useContext(todoContext);
+    //const todo = {memo: '1', time: new Date()};
+    console.log(1,todo);
+ 
+    // ERROR: 처음만 렌더링됨 근데 콘솔은 찍힘 ㅎ..
+    return (
+        <ul>
+            {
+                todo.state.todo.map((item, index)=> 
+                 (<li key={(index+1).toString()}>Memo: {item.memo} / Date: {item.time+''}</li>))
+            }
+        </ul>
+    );
+
+}
+
+type Action = | { type: 'add', things: string } | { type: 'remove', things: string };
+
+const initialState: TodoType = { todo: [{memo: '1', time: new Date()}] };
+export const todoContext = React.createContext<{
+    state: TodoType;
+    dispatch: (action:Action) => void;
+}>({ 
+    state: initialState, 
+    dispatch: ()=> {} 
+});
+
+function reducer(state: TodoType, action: Action): TodoType {
     switch (action.type) {
         case 'add':
-        return [state];
+            state.todo.push({memo: action.things, time: new Date()});
+            return state;
+        return state;
         // case 'remove':
         // return ;
     }
 }
 
-const todoContext = React.createContext([]);
 
-const initialState: TodoType[] = [];
-
-export const Todo: React.FC<TodoType> = (props) => {
+export function TodoContextProvider (props:any) {
     // hook
-    // const [state, dispatch] = React.useReducer(reducer, initialState);
+    const [things, setThings] = React.useState('');
+    const [state, dispatch] = React.useReducer(reducer, initialState);
+    let value = {state, dispatch};
 
     return (
-        <div>
-            <form>
+        <>
+            <div>
                 <label>
                     TODO: 
-                    <input type="text" />
+                    <input type="text" onInput={(c)=> setThings((c.target as HTMLInputElement).value)} />
                 </label>
-                <button>Add</button>
-            </form>
-            <ul>
-                {/*
-                <todoContext.Provider value={state}>
-                    <TodoList />
-                </todoContext.Provider>
-                */}
-                <TodoList />
-            </ul>
-        </div>
+                <button onClick={()=> dispatch({type: 'add', things: things})}>Add</button>
+            </div>
+            <todoContext.Provider value={value}>
+               <TodoList/>
+            </todoContext.Provider>
+        </>
     );
-}
-
-const TodoList:React.FC<TodoType> = (props: TodoType) => {
-    //const todo = React.useContext(todoContext);
-    const todo = {memo: '1', time: new Date()};
-    console.log(todo);
-
-    return (
-        <li><span>Memo: </span>{todo.memo}<span> / Date: </span>{todo.time + ''}</li>
-    );
-
 }
