@@ -1,19 +1,26 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { Hello } from "./Hello";
 
 export interface TodoType { todo: TodoMemo[] };
-export interface TodoMemo { memo?: string; time?: Date; }
+export interface TodoMemo { memo?: string; time?: string; }
 
 const TodoList:React.FC = (props) => {
 
   const todo = React.useContext(todoContext);
+  function removeItem(e: EventTarget, index) {
+    console.log(e, index);
+  }
   
+
   return (
       <ul>
           {
               todo.state.todo.map((item, index)=> 
-                (<li key={(index+1).toString()}>Memo: {item['memo']} / Date: {item['time']+''}</li>))
+                (<li key={(index+1).toString()}>
+                  <span>
+                    Memo: {item['memo']} / Date: {item['time']+''}
+                  </span>
+                  <button onClick={(e) => removeItem(e.target, index)}>Remove</button>
+                </li>))
           }
       </ul>
   );
@@ -26,7 +33,7 @@ const TodoList:React.FC = (props) => {
 
 type Action = | { type: 'add', things: string } | { type: 'remove', things: string };
 
-const initialState: TodoType = { todo: [{memo: '1', time: new Date()}] };
+const initialState: TodoType = { todo: [{memo: '1', time: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}] };
 export const todoContext = React.createContext<{
     state: TodoType;
     dispatch: (action:Action) => void;
@@ -38,7 +45,7 @@ export const todoContext = React.createContext<{
 function reducer(state: TodoType, action: Action): TodoType {
     switch (action.type) {
         case 'add':
-            state.todo.push({memo: action.things, time: new Date()});
+            state.todo.push({memo: action.things, time: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })});
             return state;
         return state;
         // case 'remove':

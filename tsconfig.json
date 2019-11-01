@@ -8,8 +8,17 @@
         "module": "commonjs",
         "lib": ["es5", "es6", "dom"],
         "target": "es5",
-        "jsx": "react"
-    },
+        "jsx": "react",
+        "plugins": [
+            {
+              "name": "typescript-plugin-css-modules",
+              "options": {
+                "customMatcher": "\\.css$",
+                "camelCase": "dashes"
+              }
+            }
+        ]
+},
     "include": [
         "./src/**/*"
     ],

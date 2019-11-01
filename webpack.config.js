@@ -68,7 +68,25 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /(node_modules)/,
                 loader: "source-map-loader"
-            }
+            },
+            {
+                test: /\.css$/i,
+                use: [ 
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true,
+                        },
+                    },
+                    {
+                        loader: 'typings-for-css-modules-loader?modules&namedExport&camelCase'
+                    }
+                ]
+               
+            },
         ]
     },
 
