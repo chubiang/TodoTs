@@ -2,24 +2,27 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Hello } from "./Hello";
 
-export interface TodoType { todo: {memo?: string; time?: Date;}[] };
+export interface TodoType { todo: TodoMemo[] };
+export interface TodoMemo { memo?: string; time?: Date; }
 
 const TodoList:React.FC = (props) => {
-    const todo = React.useContext(todoContext);
-    //const todo = {memo: '1', time: new Date()};
-    console.log(1,todo);
- 
-    // ERROR: 처음만 렌더링됨 근데 콘솔은 찍힘 ㅎ..
-    return (
-        <ul>
-            {
-                todo.state.todo.map((item, index)=> 
-                 (<li key={(index+1).toString()}>Memo: {item.memo} / Date: {item.time+''}</li>))
-            }
-        </ul>
-    );
+
+  const todo = React.useContext(todoContext);
+  
+  return (
+      <ul>
+          {
+              todo.state.todo.map((item, index)=> 
+                (<li key={(index+1).toString()}>Memo: {item['memo']} / Date: {item['time']+''}</li>))
+          }
+      </ul>
+  );
+
 
 }
+
+
+
 
 type Action = | { type: 'add', things: string } | { type: 'remove', things: string };
 
@@ -49,15 +52,23 @@ export function TodoContextProvider (props:any) {
     const [things, setThings] = React.useState('');
     const [state, dispatch] = React.useReducer(reducer, initialState);
     let value = {state, dispatch};
+    let targetVal;
+
+    function changeValue() {
+      if (targetVal) {
+        dispatch({type: 'add', things: targetVal});
+        setThings(targetVal);
+      }
+    }
 
     return (
         <>
             <div>
                 <label>
                     TODO: 
-                    <input type="text" onInput={(c)=> setThings((c.target as HTMLInputElement).value)} />
+                    <input type="text" onInput={(c)=> { targetVal = (c.target as HTMLInputElement).value; }} />
                 </label>
-                <button onClick={()=> dispatch({type: 'add', things: things})}>Add</button>
+                <button onClick={()=> changeValue()}>Add</button>
             </div>
             <todoContext.Provider value={value}>
                <TodoList/>
