@@ -3,14 +3,10 @@ import * as React from "react";
 export interface TodoType { todo: TodoMemo[] };
 export interface TodoMemo { memo?: string; time?: string; }
 
-const TodoList:React.FC = (props) => {
 
-  const todo = React.useContext(todoContext);
-  function removeItem(e: EventTarget, index) {
-    console.log(e, index);
-  }
+const TodoList = (props) => {
+  const todo = React.useContext(todoContext)
   
-
   return (
       <ul>
           {
@@ -19,13 +15,11 @@ const TodoList:React.FC = (props) => {
                   <span>
                     Memo: {item['memo']} / Date: {item['time']+''}
                   </span>
-                  <button onClick={(e) => removeItem(e.target, index)}>Remove</button>
+                  <button onClick={(e) => props.removeFunc(todo.state.todo, index)}>Remove</button>
                 </li>))
           }
       </ul>
   );
-
-
 }
 
 
@@ -58,6 +52,7 @@ export function TodoContextProvider (props:any) {
     // hook
     const [things, setThings] = React.useState('');
     const [state, dispatch] = React.useReducer(reducer, initialState);
+    const [remove, setRemove] = React.useState(false);
     let value = {state, dispatch};
     let targetVal;
 
@@ -68,17 +63,26 @@ export function TodoContextProvider (props:any) {
       }
     }
 
+    function removeItem(todo, index) {
+      todo.splice(index, 1);
+      setRemove(true);
+    }
+
+    React.useEffect(() => {
+      setRemove(false);
+    });
+
     return (
         <>
             <div>
                 <label>
                     TODO: 
-                    <input type="text" onInput={(c)=> { targetVal = (c.target as HTMLInputElement).value; }} />
+                    <input type="text" onChange={(c)=> { targetVal = (c.target as HTMLInputElement).value; }} />
                 </label>
                 <button onClick={()=> changeValue()}>Add</button>
             </div>
             <todoContext.Provider value={value}>
-               <TodoList/>
+               <TodoList removeFunc={removeItem}/>
             </todoContext.Provider>
         </>
     );
