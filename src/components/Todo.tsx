@@ -8,11 +8,12 @@ const TodoList = (props) => {
   const todo = React.useContext(todoContext);
 
   function editValue(val, index) {
-    todo.state.todo.forEach((v, i) => {
+    todo.state.todo.map((v, i) => {
       if (index === i) {
         v['memo'] = val;
-        v['time'] = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+        v['time'] = new Date().toLocaleString();
       }
+      return;
     });
   }
 
@@ -49,7 +50,7 @@ export const todoContext = React.createContext<{
 function reducer(state: TodoType, action: Action): TodoType {
     switch (action.type) {
         case 'add':
-          state.todo.push({memo: action.things, time: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })});
+          state.todo.push({memo: action.things, time: new Date().toLocaleString()});
           return state;
         case 'remove':
           return state;
